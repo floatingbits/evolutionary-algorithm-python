@@ -1,6 +1,5 @@
 """Genotype module for genetic representations."""
 
-from abc import ABC, abstractmethod
 from typing import Protocol, TypeVar, Generic
 
 

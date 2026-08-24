@@ -1,6 +1,6 @@
 """Evolution module - core evolutionary algorithm orchestration."""
 
-from typing import Protocol, TypeVar, Callable, Generic
+from typing import TypeVar, Generic
 from evolutionary_algorithm.specimen import SpecimenCollection, Specimen
 from evolutionary_algorithm.genotype import Genotype
 from evolutionary_algorithm.phenotype import Phenotype, PhenotypeGenerator
