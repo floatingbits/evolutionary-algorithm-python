@@ -65,7 +65,7 @@ def create_example_problem(seed: int | None = None) -> List[City]:
     if seed is not None:
         random.seed(seed)
         # Generate a random number of cities between 8 and 15
-        num = random.randint(8, 15)
+        num = random.randint(80, 150)
         cities = []
         for i in range(num):
             x = random.uniform(0, 100)

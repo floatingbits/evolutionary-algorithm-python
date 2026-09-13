@@ -12,10 +12,10 @@ from evolutionary_algorithm.mutation import (
     SwapSymbolArrayMutator,
     CollectionMutator,
 )
-from evolutionary_algorithm.recombination import (
-    SymbolArrayCrossoverRecombinator,
-    CollectionRecombinator,
-)
+from evolutionary_algorithm.examples.tsp.mutation import TwoOptMutator
+from evolutionary_algorithm.examples.tsp.recombination import OrderCrossoverRecombinator
+
+from evolutionary_algorithm.recombination import CollectionRecombinator
 from evolutionary_algorithm.cleanup import remove_duplicates
 
 from typing import List
@@ -48,19 +48,19 @@ def create_tsp_solver(cities: List[City]) -> Evolver:
     # Selector – keep 30% of the population, remove duplicates
     selector = SimpleSelector(survival_rate=0.3, remove_duplicates=True)
 
-    # Mutator – swap two cities (preserves permutation)
+    # Mutator – swap two cities (preserves permutation) and 2‑opt mutation
     swap_mutator = CollectionMutator(SwapSymbolArrayMutator())
+    two_opt_mutator = CollectionMutator(TwoOptMutator())
 
-    # Recombinator – 2‑point order crossover (works on permutations)
-    recombinator = CollectionRecombinator(
-        SymbolArrayCrossoverRecombinator(crossover_points=2)
-    )
+    # Recombination – Order Crossover (OX) for permutations
+    recombinator = CollectionRecombinator(OrderCrossoverRecombinator())
+
 
     evolver = Evolver(
         phenotype_generator=phenotype_gen,
         evaluator=evaluator,
         selector=selector,
-        mutators=[swap_mutator],
+        mutators=[swap_mutator, two_opt_mutator],
         recombinators=[recombinator],
         cleanup=remove_duplicates,
     )
@@ -73,6 +73,10 @@ def solve_example_problem(seed: int | None = None) -> tuple[Evolver, callable, L
 
     Returns a tuple ``(evolver, specimen_generator, cities)``.
     """
+    # If no seed is provided, generate a random one for variability
+    if seed is None:
+        import random as _rand
+        seed = _rand.randint(0, 1_000_000)
     cities = create_example_problem(seed=seed)
     evolver = create_tsp_solver(cities)
     specimen_gen = create_specimen_generator(len(cities))

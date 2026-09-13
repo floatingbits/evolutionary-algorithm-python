@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 """Example script for solving the Traveling Salesman Problem (TSP).
 
 The script mirrors the job‑assignment example and demonstrates how to use the
@@ -40,10 +41,22 @@ def main() -> None:
     print(f"Population size: {population_size}")
     print()
 
+    # Evaluate initial population for observability
+    for specimen in initial_population:
+        specimen.phenotype = evolver.phenotype_generator(specimen.genotype)
+        specimen.fitness = evolver.evaluator(specimen.phenotype)
+
+    print("Initial population (distance and order):")
+    for idx, specimen in enumerate(initial_population, start=1):
+        distance = -specimen.fitness.value if specimen.fitness else float('nan')
+        order = specimen.phenotype.order if specimen.phenotype else []
+        print(f"  {idx:2d}: Distance={distance:.2f}, Order={order}")
+    print()
+
     # ---------------------------------------------------------------------
     # Tournament configuration
     # ---------------------------------------------------------------------
-    rounds = 60
+    rounds = 30
     iterations = 80
     cleanup_interval = 49  # same as job‑assignment example – periodic duplicate removal
 
@@ -70,32 +83,42 @@ def main() -> None:
         final_pop = tournament.run()
         tournament.population = final_pop
 
-        if iteration % 10 == 0:
-            best = tournament.best_specimen
-            if best and best.fitness:
-                # fitness is negative distance
-                distance = -best.fitness.value
-                print(f"Iteration {iteration:3d}: Best distance = {distance:.2f}")
+        # Print best distance after each iteration
+        best = tournament.best_specimen
+        if best and best.fitness:
+            distance = -best.fitness.value
+            print(f"Iteration {iteration:3d}: Best distance = {distance:.2f}")
 
     print("-" * 70)
     print()
 
+    # Capture final population for reporting
+    final_population = tournament.population
+
     # ---------------------------------------------------------------------
     # Result reporting
     # ---------------------------------------------------------------------
-    print("Evolution complete! Top solutions:")
-    print("=" * 70)
-
-    final_population = tournament.population
+    # ---------------------------------------------------------------------
+    # Full final population details
+    # ---------------------------------------------------------------------
+    print("\nFinal population (sorted by distance):")
     final_population.sort_by_fitness(reverse=True)
+    for idx, specimen in enumerate(final_population, start=1):
+        if specimen.fitness and specimen.phenotype:
+            distance = -specimen.fitness.value
+            order = specimen.phenotype.order
+            print(f"  {idx:2d}: Distance={distance:.2f}, Order={order}")
+    print()
 
+    # Show top 5 solutions for quick reference
+    print("Top 5 solutions:")
+    print("=" * 70)
     for rank, specimen in enumerate(list(final_population)[:5], start=1):
         if specimen.fitness and specimen.phenotype:
             distance = -specimen.fitness.value
             order = specimen.phenotype.order
             print(f"\n#{rank} – Distance: {distance:.2f}")
             print("   Tour order:", " -> ".join(str(city_id) for city_id in order))
-
     print()
     print("=" * 70)
     print("Done!")
