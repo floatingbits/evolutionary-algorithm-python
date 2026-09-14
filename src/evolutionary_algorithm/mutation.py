@@ -1,11 +1,11 @@
 """Mutation module for genetic variation."""
 
-from typing import Protocol, TypeVar, Callable, Generic
 import random
-from evolutionary_algorithm.genotype import Genotype, SymbolArrayGenotype
-from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
-from evolutionary_algorithm.phenotype import Phenotype
+from typing import Callable, Generic, Protocol, TypeVar
 
+from evolutionary_algorithm.genotype import Genotype, SymbolArrayGenotype
+from evolutionary_algorithm.phenotype import Phenotype
+from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
 
 G = TypeVar("G", bound=Genotype)
 P = TypeVar("P", bound=Phenotype)

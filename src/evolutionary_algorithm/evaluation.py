@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from typing import Protocol, TypeVar
+
 from evolutionary_algorithm.phenotype import Phenotype
 
 

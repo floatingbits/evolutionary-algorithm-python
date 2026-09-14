@@ -9,9 +9,9 @@ from __future__ import annotations
 import random
 from typing import List
 
+from evolutionary_algorithm.examples.tsp.phenotype import TSPPhenotype
 from evolutionary_algorithm.genotype import SymbolArrayGenotype
 from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
-from evolutionary_algorithm.examples.tsp.phenotype import TSPPhenotype
 
 
 def create_specimen_generator(num_cities: int):

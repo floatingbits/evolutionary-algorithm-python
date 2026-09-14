@@ -10,7 +10,7 @@ feasible, diverse and of decent quality.
 from __future__ import annotations
 
 import random
-from typing import Callable, List
+from collections.abc import Callable
 
 from evolutionary_algorithm.examples.knapsack.phenotype import KnapsackPhenotype
 from evolutionary_algorithm.examples.knapsack.problem import Item
@@ -19,7 +19,7 @@ from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
 
 
 def create_specimen_generator(
-    items: List[Item], capacity: int
+    items: list[Item], capacity: int
 ) -> Callable[[int], SpecimenCollection]:
     """Return a function that creates an initial population of feasible packings.
 
@@ -32,7 +32,7 @@ def create_specimen_generator(
     """
 
     def generate(count: int) -> SpecimenCollection[SymbolArrayGenotype[int], KnapsackPhenotype]:
-        specimens: List[Specimen[SymbolArrayGenotype[int], None]] = []
+        specimens: list[Specimen[SymbolArrayGenotype[int], None]] = []
         n = len(items)
         for _ in range(count):
             # Random packing order, greedily fill while capacity lasts

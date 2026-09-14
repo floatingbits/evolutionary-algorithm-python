@@ -33,11 +33,8 @@ example is fully reproducible when the same seed is used.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import List, Tuple
-
 import random
-
+from dataclasses import dataclass
 
 #: Seed used by :func:`create_example_problem` when none is provided.
 DEFAULT_SEED = 2024
@@ -65,7 +62,7 @@ class Item:
         return f"Item(id={self.id}, weight={self.weight}, value={self.value})"
 
 
-def compute_dp_optimum(items: List[Item], capacity: int) -> int:
+def compute_dp_optimum(items: list[Item], capacity: int) -> int:
     """Compute the optimal value of the 0/1-Knapsack instance by dynamic programming.
 
     Runs in O(len(items) * capacity) time and O(capacity) memory, which is
@@ -97,7 +94,7 @@ def _generate_instance(
     max_weight: int = 3000,
     capacity_scale: float = 2.0,
     value_noise: int = 9,
-) -> Tuple[List[Item], int]:
+) -> tuple[list[Item], int]:
     """Generate a hard instance from the given (local) random stream.
 
     Args:
@@ -114,8 +111,8 @@ def _generate_instance(
     Returns:
         ``(items, capacity)``.
     """
-    weights: List[int] = []
-    values: List[int] = []
+    weights: list[int] = []
+    values: list[int] = []
 
     for i in range(num_items):
         r = rng.random()
@@ -140,7 +137,7 @@ def _generate_instance(
     return items, capacity
 
 
-def create_example_problem(seed: int = DEFAULT_SEED) -> Tuple[List[Item], int]:
+def create_example_problem(seed: int = DEFAULT_SEED) -> tuple[list[Item], int]:
     """Return ``(items, capacity)`` for the example knapsack.
 
     The same seed always produces the same instance, so benchmark runs are

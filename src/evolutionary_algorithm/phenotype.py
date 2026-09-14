@@ -1,6 +1,7 @@
 """Phenotype module for observable characteristics."""
 
-from typing import Protocol, TypeVar, Callable
+from typing import Callable, Protocol, TypeVar
+
 from evolutionary_algorithm.genotype import Genotype
 
 

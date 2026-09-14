@@ -1,6 +1,6 @@
 """Genotype module for genetic representations."""
 
-from typing import Protocol, TypeVar, Generic
+from typing import Generic, Protocol, TypeVar
 
 
 class Genotype(Protocol):

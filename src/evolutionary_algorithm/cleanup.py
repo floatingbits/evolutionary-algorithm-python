@@ -1,10 +1,10 @@
 """Cleanup module for population maintenance."""
 
 from typing import Protocol, TypeVar
-from evolutionary_algorithm.specimen import SpecimenCollection
+
 from evolutionary_algorithm.genotype import Genotype
 from evolutionary_algorithm.phenotype import Phenotype
-
+from evolutionary_algorithm.specimen import SpecimenCollection
 
 G = TypeVar("G", bound=Genotype)
 P = TypeVar("P", bound=Phenotype)

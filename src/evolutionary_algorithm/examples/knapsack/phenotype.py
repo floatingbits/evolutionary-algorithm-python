@@ -8,7 +8,6 @@ rewards total value while strictly respecting the weight limit.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
 
 from evolutionary_algorithm.examples.knapsack.problem import Item
 from evolutionary_algorithm.genotype import SymbolArrayGenotype
@@ -30,7 +29,7 @@ class KnapsackPhenotype:
         ``True`` if ``total_weight`` does not exceed the capacity.
     """
 
-    selected: List[int]
+    selected: list[int]
     total_weight: int
     total_value: int
     feasible: bool
@@ -43,7 +42,7 @@ class KnapsackPhenotype:
         )
 
 
-def create_phenotype_generator(items: List[Item], capacity: int):
+def create_phenotype_generator(items: list[Item], capacity: int):
     """Return a function that converts a genotype into a ``KnapsackPhenotype``.
 
     The genotype is a ``SymbolArrayGenotype[int]`` of 0/1 symbols where position

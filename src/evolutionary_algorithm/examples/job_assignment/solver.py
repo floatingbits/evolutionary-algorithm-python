@@ -1,20 +1,20 @@
 """Complete solver setup for job assignment problem."""
 
-from evolutionary_algorithm.evolution import Evolver
-from evolutionary_algorithm.selection import SimpleSelector
-from evolutionary_algorithm.mutation import SimpleSymbolArrayMutator, CollectionMutator
-from evolutionary_algorithm.recombination import (
-    SymbolArrayCrossoverRecombinator,
-    CollectionRecombinator,
-)
 from evolutionary_algorithm.cleanup import remove_duplicates
-from evolutionary_algorithm.randomizer import random_int
-from evolutionary_algorithm.examples.job_assignment.problem import Job, create_example_problem
-from evolutionary_algorithm.examples.job_assignment.phenotype import create_phenotype_generator
+from evolutionary_algorithm.evolution import Evolver
 from evolutionary_algorithm.examples.job_assignment.evaluator import evaluate_job_assignment
+from evolutionary_algorithm.examples.job_assignment.phenotype import create_phenotype_generator
+from evolutionary_algorithm.examples.job_assignment.problem import Job, create_example_problem
 from evolutionary_algorithm.examples.job_assignment.specimen_generator import (
     create_specimen_generator,
 )
+from evolutionary_algorithm.mutation import CollectionMutator, SimpleSymbolArrayMutator
+from evolutionary_algorithm.randomizer import random_int
+from evolutionary_algorithm.recombination import (
+    CollectionRecombinator,
+    SymbolArrayCrossoverRecombinator,
+)
+from evolutionary_algorithm.selection import SimpleSelector
 
 
 def create_job_assignment_solver(jobs: list[Job], num_machines: int) -> Evolver:

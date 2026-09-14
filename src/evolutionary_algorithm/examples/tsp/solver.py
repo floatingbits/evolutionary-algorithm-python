@@ -6,26 +6,24 @@ the permutation property of the genotype.
 
 from __future__ import annotations
 
-from evolutionary_algorithm.evolution import Evolver
-from evolutionary_algorithm.selection import SimpleSelector
-from evolutionary_algorithm.mutation import (
-    SwapSymbolArrayMutator,
-    CollectionMutator,
-)
-from evolutionary_algorithm.examples.tsp.mutation import TwoOptMutator
-from evolutionary_algorithm.examples.tsp.recombination import OrderCrossoverRecombinator
-
-from evolutionary_algorithm.recombination import CollectionRecombinator
-from evolutionary_algorithm.cleanup import remove_duplicates
-
 from typing import List
 
-from evolutionary_algorithm.examples.tsp.problem import City, create_example_problem
-from evolutionary_algorithm.examples.tsp.phenotype import create_phenotype_generator
+from evolutionary_algorithm.cleanup import remove_duplicates
+from evolutionary_algorithm.evolution import Evolver
 from evolutionary_algorithm.examples.tsp.evaluator import evaluate_tsp
+from evolutionary_algorithm.examples.tsp.mutation import TwoOptMutator
+from evolutionary_algorithm.examples.tsp.phenotype import create_phenotype_generator
+from evolutionary_algorithm.examples.tsp.problem import City, create_example_problem
+from evolutionary_algorithm.examples.tsp.recombination import OrderCrossoverRecombinator
 from evolutionary_algorithm.examples.tsp.specimen_generator import (
     create_specimen_generator,
 )
+from evolutionary_algorithm.mutation import (
+    CollectionMutator,
+    SwapSymbolArrayMutator,
+)
+from evolutionary_algorithm.recombination import CollectionRecombinator
+from evolutionary_algorithm.selection import SimpleSelector
 
 
 def create_tsp_solver(cities: List[City]) -> Evolver:

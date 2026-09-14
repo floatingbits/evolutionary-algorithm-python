@@ -1,11 +1,11 @@
 """Recombination module for genetic crossover operations."""
 
-from typing import Protocol, TypeVar, Generic
 import random
-from evolutionary_algorithm.genotype import Genotype, SymbolArrayGenotype
-from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
-from evolutionary_algorithm.phenotype import Phenotype
+from typing import Generic, Protocol, TypeVar
 
+from evolutionary_algorithm.genotype import Genotype, SymbolArrayGenotype
+from evolutionary_algorithm.phenotype import Phenotype
+from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
 
 G = TypeVar("G", bound=Genotype)
 P = TypeVar("P", bound=Phenotype)

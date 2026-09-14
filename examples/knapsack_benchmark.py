@@ -11,9 +11,13 @@ same instance, same initial populations) and compared by
 * the best value each configuration reached,
 * relative to the known optimum (dynamic programming) and to the best
   achieved by any configuration,
-* the number of evolution rounds (sequence: 1 catch: evolve) needed to
-  reach milestone targets — absolute or fractional references
+* the number of evolution rounds needed to reach milestone targets —
+  absolute or fractional references
   (see ``evolutionary_algorithm.benchmark``).
+* one configuration uses the *slipped repair* variant: a configurable share
+  of variation operations may leave slightly overweight children, and the
+  ``FeasibilityAwareSelector`` fills a protected minority of the survivor
+  slots from the best of the rejected specimens on a mild secondary scale.
 """
 
 import argparse
@@ -28,51 +32,15 @@ from evolutionary_algorithm.benchmark import (
     SolverConfig,
     render_report,
 )
-from evolutionary_algorithm.cleanup import remove_duplicates
-from evolutionary_algorithm.evolution import Evolver
-from evolutionary_algorithm.examples.knapsack.evaluator import evaluate_knapsack
-from evolutionary_algorithm.examples.knapsack.mutation import (
-    FlipItemMutator,
-    GreedyFillMutator,
-    SwapInOutMutator,
-)
-from evolutionary_algorithm.examples.knapsack.phenotype import (
-    create_phenotype_generator,
-)
 from evolutionary_algorithm.examples.knapsack.problem import (
     DEFAULT_SEED,
-    Item,
     compute_dp_optimum,
     create_example_problem,
 )
-from evolutionary_algorithm.examples.knapsack.recombination import (
-    UniformCrossoverRecombinator,
-)
+from evolutionary_algorithm.examples.knapsack.solver import create_knapsack_solver
 from evolutionary_algorithm.examples.knapsack.specimen_generator import (
     create_specimen_generator,
 )
-from evolutionary_algorithm.mutation import CollectionMutator
-from evolutionary_algorithm.recombination import CollectionRecombinator
-from evolutionary_algorithm.selection import SimpleSelector
-
-
-def build_evolver(items: list[Item], capacity: int, *, with_greedy_fill: bool = True) -> Evolver:
-    """Build a knapsack solver variant with a configurable operator set."""
-    mutators = [FlipItemMutator(items, capacity), SwapInOutMutator(items, capacity)]
-    if with_greedy_fill:
-        mutators.append(GreedyFillMutator(items, capacity))
-
-    evolver = Evolver(
-        phenotype_generator=create_phenotype_generator(items, capacity),
-        evaluator=evaluate_knapsack,
-        selector=SimpleSelector(survival_rate=0.3, remove_duplicates=True),
-        mutators=[CollectionMutator(m) for m in mutators],
-        recombinators=[
-            CollectionRecombinator(UniformCrossoverRecombinator(items, capacity))
-        ],
-        cleanup=remove_duplicates,
-    )
-    return evolver
 
 
 def parse_args() -> argparse.Namespace:
@@ -150,11 +118,41 @@ def main() -> None:
     configs = [
         SolverConfig(
             "full operator set",
-            lambda: build_evolver(items, capacity, with_greedy_fill=True),
+            lambda: create_knapsack_solver(items, capacity, with_greedy_fill=True),
         ),
         SolverConfig(
             "without greedy fill",
-            lambda: build_evolver(items, capacity, with_greedy_fill=False),
+            lambda: create_knapsack_solver(items, capacity, with_greedy_fill=False),
+        ),
+        SolverConfig(
+            "slipped: 60% repair, 5% overweight max, 10% overweight lane",
+            lambda: create_knapsack_solver(
+                items, capacity,
+                repair_rate=0.6,          # 40% of operations skip strict repair
+                max_overweight=0.05,      # ... and keep ≤ 5% overweight
+                feasible_quota=0.9,       # 90% of survivors on the main scale,
+                                          # 10% via the mild secondary lane
+            ),
+        ),
+        SolverConfig(
+            "slipped: 50% repair, 15% overweight max, 20% overweight lane",
+            lambda: create_knapsack_solver(
+                items, capacity,
+                repair_rate=0.5,  # 50% of operations skip strict repair
+                max_overweight=0.15,  # ... and keep ≤ 15% overweight
+                feasible_quota=0.8,  # 80% of survivors on the main scale,
+                # 20% via the mild secondary lane
+            ),
+        ),
+        SolverConfig(
+            "slipped: 10% repair, 5% overweight max, 40% overweight lane",
+            lambda: create_knapsack_solver(
+                items, capacity,
+                repair_rate=0.1,  # 50% of operations skip strict repair
+                max_overweight=0.05,  # ... and keep ≤ 15% overweight
+                feasible_quota=0.6,  # 60% of survivors on the main scale,
+                # 40% via the mild secondary lane
+            ),
         ),
     ]
 

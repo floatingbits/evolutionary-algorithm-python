@@ -1,8 +1,9 @@
 """Phenotype for job assignment problem."""
 
 from dataclasses import dataclass
-from evolutionary_algorithm.genotype import SymbolArrayGenotype
+
 from evolutionary_algorithm.examples.job_assignment.problem import Job
+from evolutionary_algorithm.genotype import SymbolArrayGenotype
 
 
 @dataclass(frozen=True)

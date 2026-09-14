@@ -9,9 +9,7 @@ producing a substantial rearrangement of the tour.
 from __future__ import annotations
 
 import random
-from typing import Callable
 
-from evolutionary_algorithm.mutation import Mutator
 from evolutionary_algorithm.genotype import SymbolArrayGenotype
 
 

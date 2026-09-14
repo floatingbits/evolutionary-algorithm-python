@@ -1,11 +1,11 @@
 """Specimen module for individual solutions in the population."""
 
-from dataclasses import dataclass, field
-from typing import Protocol, TypeVar, Iterator, Callable, Generic
+from dataclasses import dataclass
+from typing import Callable, Generic, Iterator, Protocol, TypeVar
+
+from evolutionary_algorithm.evaluation import Fitness
 from evolutionary_algorithm.genotype import Genotype
 from evolutionary_algorithm.phenotype import Phenotype
-from evolutionary_algorithm.evaluation import Fitness
-
 
 G = TypeVar("G", bound=Genotype)
 P = TypeVar("P", bound=Phenotype)

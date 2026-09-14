@@ -1,10 +1,10 @@
 """Specimen generator for job assignment problem."""
 
-from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
+from evolutionary_algorithm.examples.job_assignment.phenotype import JobAssignmentPhenotype
+from evolutionary_algorithm.examples.job_assignment.problem import Job
 from evolutionary_algorithm.genotype import SymbolArrayGenotype
 from evolutionary_algorithm.randomizer import random_int
-from evolutionary_algorithm.examples.job_assignment.problem import Job
-from evolutionary_algorithm.examples.job_assignment.phenotype import JobAssignmentPhenotype
+from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
 
 
 def create_specimen_generator(jobs: list[Job], num_machines: int):

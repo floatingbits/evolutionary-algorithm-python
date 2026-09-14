@@ -1,15 +1,15 @@
 """Evolution module - core evolutionary algorithm orchestration."""
 
-from typing import TypeVar, Generic
-from evolutionary_algorithm.specimen import SpecimenCollection, Specimen
-from evolutionary_algorithm.genotype import Genotype
-from evolutionary_algorithm.phenotype import Phenotype, PhenotypeGenerator
-from evolutionary_algorithm.evaluation import Evaluator, Fitness
-from evolutionary_algorithm.selection import Selector
-from evolutionary_algorithm.mutation import CollectionMutator
-from evolutionary_algorithm.recombination import CollectionRecombinator
-from evolutionary_algorithm.cleanup import Cleanup
+from typing import Generic, TypeVar
 
+from evolutionary_algorithm.cleanup import Cleanup
+from evolutionary_algorithm.evaluation import Evaluator
+from evolutionary_algorithm.genotype import Genotype
+from evolutionary_algorithm.mutation import CollectionMutator
+from evolutionary_algorithm.phenotype import Phenotype, PhenotypeGenerator
+from evolutionary_algorithm.recombination import CollectionRecombinator
+from evolutionary_algorithm.selection import Selector
+from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
 
 G = TypeVar("G", bound=Genotype)
 P = TypeVar("P", bound=Phenotype)

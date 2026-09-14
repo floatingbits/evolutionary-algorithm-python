@@ -10,8 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List
 
-from evolutionary_algorithm.genotype import SymbolArrayGenotype
 from evolutionary_algorithm.examples.tsp.problem import City
+from evolutionary_algorithm.genotype import SymbolArrayGenotype
 
 
 @dataclass(frozen=True)

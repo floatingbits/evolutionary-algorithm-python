@@ -1,15 +1,16 @@
 """Basic tests for the evolutionary algorithm framework."""
 
 import pytest
-from evolutionary_algorithm.genotype import SymbolArrayGenotype
-from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
+
 from evolutionary_algorithm.evaluation import Fitness
-from evolutionary_algorithm.selection import SimpleSelector
-from evolutionary_algorithm.mutation import SimpleSymbolArrayMutator, CollectionMutator
+from evolutionary_algorithm.genotype import SymbolArrayGenotype
+from evolutionary_algorithm.mutation import CollectionMutator, SimpleSymbolArrayMutator
 from evolutionary_algorithm.recombination import (
-    SymbolArrayCrossoverRecombinator,
     CollectionRecombinator,
+    SymbolArrayCrossoverRecombinator,
 )
+from evolutionary_algorithm.selection import SimpleSelector
+from evolutionary_algorithm.specimen import Specimen, SpecimenCollection
 
 
 def test_genotype_creation():
