@@ -7,28 +7,66 @@ evolutionary algorithm framework for the classic subset-selection problem:
 fill a knapsack with a subset of items to maximise total value without ever
 exceeding the strict weight limit (capacity).
 
+The instance is deliberately hard (bulky items + strongly correlated values,
+see ``evolutionary_algorithm.examples.knapsack.problem``), so the simple
+evolutionary configuration plateaus well below the exact optimum.
+
+Everything is fully reproducible: the global random stream is seeded with
+``--seed`` (default ``2024``) and the instance is generated from the very
+same seed, so two script calls with the same arguments produce identical
+output.
+
 The runtime output prints – after every iteration – how the best total value
 evolves relative to the (dynamically computed) optimal value of the instance,
 so the progress of the optimisation can be witnessed directly.
 """
 
+import argparse
+import os
+import random
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+
 from evolutionary_algorithm.evolution import Tournament
+from evolutionary_algorithm.examples.knapsack.problem import (
+    DEFAULT_SEED,
+    compute_dp_optimum,
+)
 from evolutionary_algorithm.examples.knapsack.solver import solve_example_problem
-from evolutionary_algorithm.examples.knapsack.problem import compute_dp_optimum
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse the command-line arguments of the example."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=DEFAULT_SEED,
+        help="Seed for the problem instance AND the random stream of the "
+        "evolution: the same seed always gives identical results.",
+    )
+    return parser.parse_args()
 
 
 def main() -> None:
     """Run the 0/1-Knapsack example."""
+    args = parse_args()
+
+    # One stream for everything: instance generation plus all operators.
+    random.seed(args.seed)
+
     print("=" * 70)
     print("0/1-Knapsack Problem – Evolutionary Algorithm Example")
     print("=" * 70)
+    print(f"Seed: {args.seed}  (fully reproducible with the same seed)")
     print()
 
     # ---------------------------------------------------------------------
-    # Problem setup
+    # Problem setup (generated from the seed – same seed, same instance)
     # ---------------------------------------------------------------------
     print("Setting up problem…")
-    evolver, specimen_gen, items, capacity = solve_example_problem()
+    evolver, specimen_gen, items, capacity = solve_example_problem(seed=args.seed)
     num_items = len(items)
     total_weight = sum(item.weight for item in items)
     total_value = sum(item.value for item in items)
@@ -60,13 +98,14 @@ def main() -> None:
         specimen.phenotype = evolver.phenotype_generator(specimen.genotype)
         specimen.fitness = evolver.evaluator(specimen.phenotype)
 
-    print("Initial population (value, weight and packing):")
+    print("Initial population (value and weight; per-item lists omitted for "
+          "this problem size):")
     for idx, specimen in enumerate(initial_population, start=1):
         phenotype = specimen.phenotype
         print(
             f"  {idx:2d}: Value={phenotype.total_value}, "
             f"Weight={phenotype.total_weight}/{capacity}, "
-            f"Items={phenotype.selected}"
+            f"Items={len(phenotype.selected)}"
         )
     print()
 
@@ -132,7 +171,7 @@ def main() -> None:
             print(
                 f"  {idx:2d}: Value={phenotype.total_value}, "
                 f"Weight={phenotype.total_weight}/{capacity}, "
-                f"Items={phenotype.selected}"
+                f"Items={len(phenotype.selected)}"
             )
     print()
 

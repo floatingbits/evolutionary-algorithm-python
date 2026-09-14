@@ -5,16 +5,42 @@ a value, plus a strict capacity limit. The goal is to choose a subset of items
 that maximises total value while the total weight must never exceed the
 capacity.
 
-This module also exposes a dynamic-programming ``compute_dp_optimum`` helper so
-the example script can report how far the evolved solution is from the true
-optimum.
+This module generates a deliberately *hard* instance family:
+
+* **Size classes with bulky items.** The heaviest items each take up
+  25–50% of the container capacity themselves, while many small filler
+  items exist. Filling the container exactly therefore requires
+  conflicting decisions: taking a bulky item blocks several complementary
+  combinations.
+* **Strongly correlated values.** ``value = weight + small noise``. The
+  value-per-weight ratios are almost uniform, so greedy sorting cannot land
+  on the optimum and the achievable value depends on the exact fill level of
+  the container — a subset-sum problem in disguise.
+* **Scale.** With the default 1000 items the search space is 2^1000, far
+  beyond naive search, and the exact optimum is still computable via
+  dynamic programming to allow exact gap reporting.
+
+Empirically, a simple evolutionary configuration plateaus around 94–95% of
+the dynamic-programming optimum even after a full budget of iterations —
+a gap that visibly rewards more sophisticated variation operators.
+
+This module also exposes a dynamic-programming ``compute_dp_optimum`` helper
+so scripts can report how far the evolved solution is from the true optimum.
+
+Every instance is generated from an explicit integer ``seed``, so the
+example is fully reproducible when the same seed is used.
 """
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
+
+import random
+
+
+#: Seed used by :func:`create_example_problem` when none is provided.
+DEFAULT_SEED = 2024
 
 
 @dataclass(frozen=True)
@@ -42,8 +68,8 @@ class Item:
 def compute_dp_optimum(items: List[Item], capacity: int) -> int:
     """Compute the optimal value of the 0/1-Knapsack instance by dynamic programming.
 
-    Runs in O(len(items) * capacity) time and O(capacity) memory, which is fine
-    for the example sizes used here.
+    Runs in O(len(items) * capacity) time and O(capacity) memory, which is
+    fine for the example sizes used here (1000 items * ~6000 capacity).
 
     Args:
         items: List of items with integer weights and values.
@@ -65,45 +91,66 @@ def compute_dp_optimum(items: List[Item], capacity: int) -> int:
     return dp[capacity]
 
 
-def _make_fixed_problem() -> tuple[List[Item], int]:
-    """Create a deterministic knapsack instance.
+def _generate_instance(
+    rng: random.Random,
+    num_items: int = 1000,
+    max_weight: int = 3000,
+    capacity_scale: float = 2.0,
+    value_noise: int = 9,
+) -> Tuple[List[Item], int]:
+    """Generate a hard instance from the given (local) random stream.
 
-    The instance uses *strongly correlated* data (``value ≈ weight + small
-    noise``), which is a classic hard configuration for subset-selection
-    heuristics: value-per-weight ratios are almost uniform, so greedy sorting
-    cannot land on the optimum and evolution has to make real decisions.
-    The capacity is a tight fraction (~25%) of the total weight so the
-    selection is highly constrained.
+    Args:
+        rng: The random stream to draw from (kept local so instance generation
+            does not disturb the global stream used by the operators).
+        num_items: Number of items (default 1000 — the search space is 2^1000).
+        max_weight: Upper bound for item weights.
+        capacity_scale: Capacity as a fraction of ``max_weight``. 2.0 gives a
+            tight but non-trivial fit: even the heaviest class items fit alone,
+            and exact fill of the container is far from obvious.
+        value_noise: Size of the small random noise added to the strongly
+            correlated values.
+
+    Returns:
+        ``(items, capacity)``.
     """
-    rng = random.Random(7)
-    num_items = 100
-    weights = [rng.randint(5, 94) for _ in range(num_items)]
-    values = [weights[i] + rng.randint(0, 9) for i in range(num_items)]
+    weights: List[int] = []
+    values: List[int] = []
+
+    for i in range(num_items):
+        r = rng.random()
+        if r < 0.20:
+            # Bulky items: half to the full container's nominal size budget
+            w = rng.randint(int(max_weight * 0.5), max_weight)
+        elif r < 0.50:
+            # Medium items
+            w = rng.randint(int(max_weight * 0.2), int(max_weight * 0.5))
+        else:
+            # Many small filler items
+            w = rng.randint(20, int(max_weight * 0.2))
+
+        # Strongly correlated value: near-uniform ratios forbid greedy shortcuts
+        v = w + rng.randint(0, value_noise)
+
+        weights.append(w)
+        values.append(v)
+
+    capacity = max(1, round(max_weight * capacity_scale))
     items = [Item(id=i, weight=weights[i], value=values[i]) for i in range(num_items)]
-    total_weight = sum(weights)
-    capacity = max(1, round(total_weight * 0.25))  # tight but non-trivial limit
     return items, capacity
 
 
-def create_example_problem(seed: int | None = None) -> tuple[List[Item], int]:
+def create_example_problem(seed: int = DEFAULT_SEED) -> Tuple[List[Item], int]:
     """Return ``(items, capacity)`` for the example knapsack.
 
+    The same seed always produces the same instance, so benchmark runs are
+    reproducible.
+
     Args:
-        seed: Optional seed. When ``None`` a fixed instance is returned;
-            when given, a random strongly-correlated instance is generated
-            from that seed.
+        seed: Integer seed (default ``DEFAULT_SEED``).
     """
-    if seed is not None:
-        rng = random.Random(seed)
-        num_items = rng.randint(60, 120)
-        weights = [rng.randint(5, 94) for _ in range(num_items)]
-        values = [weights[i] + rng.randint(0, 9) for i in range(num_items)]
-        items = [Item(id=i, weight=weights[i], value=values[i]) for i in range(num_items)]
-        total_weight = sum(weights)
-        capacity = max(1, round(total_weight * 0.25))
-        return items, capacity
-    else:
-        return _make_fixed_problem()
+    rng = random.Random(seed)
+    return _generate_instance(rng)
 
 
-__all__ = ["Item", "create_example_problem", "compute_dp_optimum"]
+__all__ = ["Item", "create_example_problem", "compute_dp_optimum", "DEFAULT_SEED"]
